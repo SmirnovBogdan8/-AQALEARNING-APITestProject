@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'io.qameta.allure' version '2.9.6'
 }
 
 group = 'org.example'
@@ -9,9 +10,36 @@ repositories {
     mavenCentral()
 }
 
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+ext {
+    restAssuredVersion = "5.3.1"
+    junitVersion = "5.10.0"
+    cucumberVersion = "7.13.0"
+    allureVersion = "2.24.0"
+    aspectjVersion = "1.9.5"
+}
+
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    //JUnit
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    //Rest Assured
+    testImplementation "io.rest-assured:rest-assured:$restAssuredVersion"
+    //Cucumber
+    testImplementation "io.cucumber:cucumber-java:$cucumberVersion"
+    testImplementation "io.cucumber:cucumber-junit:$cucumberVersion"
+    //Allure
+    testImplementation "org.aspectj:aspectjweaver:$aspectjVersion"
+    testImplementation "io.qameta.allure:allure-junit5:$allureVersion"
+    testImplementation "io.qameta.allure:allure-commandline:$allureVersion"
+    testImplementation "io.qameta.allure:allure-assertj:$allureVersion"
+    testImplementation "io.qameta.allure:allure-rest-assured:$allureVersion"
+    testImplementation "io.qameta.allure:allure-java-commons:$allureVersion"
 }
 
 test {
