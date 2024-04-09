@@ -13,13 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Feature("API тестирование")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ReqResTest {
+public class ReqResMockTest {
     private static String URL;
 
     @BeforeAll
     public static void setup() {
         RestAssured.filters(new AllureRestAssured());
-        URL = "https://reqres.in/";
+        URL = "http://localhost:8080/";
     }
 
     @Test
