@@ -23,6 +23,7 @@ ext {
     allureVersion = "2.24.0"
     aspectjVersion = "1.9.5"
     wiremockVersion = "3.0.1"
+    gsonVersion = "2.9.0"
 }
 
 dependencies {
@@ -43,6 +44,8 @@ dependencies {
     testImplementation "io.qameta.allure:allure-java-commons:$allureVersion"
     //Wiremock
     testImplementation "com.github.tomakehurst:wiremock:$wiremockVersion"
+    // Gson
+    testImplementation "com.google.code.gson:gson:$gsonVersion"
 
 }
 
