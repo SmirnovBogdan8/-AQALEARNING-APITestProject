@@ -1,13 +1,16 @@
 package org.example.mock;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.google.gson.*;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
@@ -100,6 +103,7 @@ public class ReqResMock {
         );
 
         stubFor(post(urlEqualTo("/api/register"))
+                .withRequestBody(containing("\"email\": \"eve.holt@reqres.in\""))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -107,11 +111,30 @@ public class ReqResMock {
                 )
         );
 
+        stubFor(post(urlEqualTo("/api/register"))
+                .withRequestBody(containing("\"email\": \"sydney@fife\""))
+                .willReturn(aResponse()
+                        .withStatus(400)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("REGISTERUNSUCCESSFUL.json")
+                )
+        );
+
         stubFor(post(urlEqualTo("/api/login"))
+                .withRequestBody(containing("\"email\": \"eve.holt@reqres.in\""))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("LOGINSUCCESSFUL.json")
+                )
+        );
+
+        stubFor(post(urlEqualTo("/api/login"))
+                .withRequestBody(containing("\"email\": \"peter@klaven\""))
+                .willReturn(aResponse()
+                        .withStatus(400)
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("LOGINUNSUCCESSFUL.json")
                 )
         );
 
@@ -125,10 +148,6 @@ public class ReqResMock {
                 )
         );
 
-        stubFor(get(urlPathEqualTo("/echo"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withBody("{request.body}")));
     }
 
     private static String generateResponse(String path, String method) throws FileNotFoundException {
@@ -137,13 +156,12 @@ public class ReqResMock {
         JsonParser jsonParser = new JsonParser();
         jsonObject = jsonParser.parse(reader).getAsJsonObject();
 
-        if(method.equals("POST")){
+        if (method.equals("POST")) {
             jsonObject.addProperty("id", generateId());
             jsonObject.addProperty("createdAt", generateDateTime());
         } else {
             jsonObject.addProperty("updatedAt", generateDateTime());
         }
-
 
 
         return jsonObject.toString();
@@ -157,6 +175,12 @@ public class ReqResMock {
     private static String generateDateTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         return LocalDateTime.now().format(formatter);
+    }
+
+    public static boolean checkEmail(String email) {
+        Pattern pattern = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+        Matcher matcher = pattern.matcher(email);
+        return matcher.find();
     }
 
     public static void main(String[] args) throws FileNotFoundException {
